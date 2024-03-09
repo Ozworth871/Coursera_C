@@ -1,0 +1,10 @@
+#include<stdio.h>
+int main(void)
+{   
+    printf("City of stars\n\n");
+    printf("City of stars\nAre you shining just for me?\n\n");
+    printf("City of stars\nThere's so much that I can't see\n\n");
+    printf("Who knows?\nIs this the start of something wonderful and new?\n\n");
+    printf("Or one more dream that I cannot make true?\n");
+    return 0;
+}    

@@ -1,0 +1,18 @@
+/* To print the sine value of an input value 
+Using sin function from math.h library */
+
+#include<stdio.h>
+#include<math.h>
+
+int main(void)
+{ 
+ // Get an input value and store it as input_value double
+ double input_value;
+ printf("Enter a value:");
+ scanf("%lf", &input_value);
+
+ // Calculate and print the sine value using sin function
+ printf("The sine value is : %lf (rounded to 6 decimal places) \n\n", sin(input_value) );
+ 
+ return 0;
+}

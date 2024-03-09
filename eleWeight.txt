@@ -1,0 +1,46 @@
+#include <stdio.h>
+
+int main() {
+
+	// read the weight txt file
+	FILE *weightData;
+	weightData = fopen("weightData.txt", "r");
+
+	// if read fails terminate the program
+	if(weightData == NULL){
+		printf("Could not open the file");
+		return(0);
+	}
+
+	// check the size of the data
+	int size;
+	int temp; // temp value to check the size
+	while(EOF!=fscanf(weightData, "%d", &temp))
+		size++;
+
+	// read and store the weights into an int array
+	fseek(weightData, 0, SEEK_SET); // reset the fscan pointer to the beginning of the file
+	int weightArray[size]; // int array to store the weights from the data file
+
+	int i;
+	for (i = 0; i < size; i++) {
+		fscanf(weightData, "%d", &weightArray[i]);
+	}
+
+	// calculate the sum of the weights
+	int sum;
+	for (i = 0; i < size; i++) {
+		sum += weightArray[i];
+		printf("%d\t", weightArray[i]); // print the values for checking
+	}
+	printf("\n\n");
+
+	fclose(weightData); // close the data
+	printf("Data size = %d\t", size); // print the size for checking
+
+	// calculate the average of the weights
+	double averageWeight = sum * 1.0 / size;
+	printf("Average weight = %lf", averageWeight); // print the average weight
+	return(0);
+
+}

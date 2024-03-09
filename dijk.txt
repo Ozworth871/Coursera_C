@@ -1,0 +1,181 @@
+// HW2 the shortestPath finding by Dijkstra's algorithm
+
+
+// 200 words explanation
+
+// 1) Structure:
+// 1-1)
+// adj list was used instead of matrix,
+// because adj list is more efficient and easier to use with sparse & weighted graphs
+
+// 0, 1, ...., 49 vertices are represented as list vertex[0], vertex[1], ..., vertex[49]
+// each vertex[] contains edges
+// edges are represented as the pair<index of adjacent vertex, distance>
+
+// 1-2)
+// There is only one class: Graph, which has 3 methods
+
+// addEdge(int x, int y, double w) 
+// to add an edge in the graph from x to y along with weight w
+
+// random_graph_generator(int no_of_vertices, double edge_density); 
+// random graph generator using addEdge function, no. of vertices, edge density, and distance range
+
+// shortestPath(int src)
+// shortestpath finder
+
+
+// 2) How it works
+// 2-1) a graph will be constructed using random_graph_generator
+
+// random_graph_generator makes a random double between 0.0 to 1.0 by prob_density() function.
+// if the random double is between 0.0 and the given edge density (0.2, 0.4 in HW2)
+// then an edge from x to y will be made along with the random distance between 1.0 and 10.0 (as given in HW2)
+// by using rand_distance(), addEdge(int x, int y, double w) function
+
+// 2-2) find shortestPath and calculate the average using shortestPath(int src)
+
+// shortestPath(int src) uses vector<double> dist and priorityQueue
+
+// dist[n] is the shortest distance from the source(vertex 0 in HW2) to another vertex n
+
+// the finder starts from the source and moves along the edges by using the priorityQueue
+// the finder goes to an adjacent vertex with the shortest distance by pushing the edge into the priorityQueue, 
+// and at the same time it updates the dist[] with the newest minimum
+
+// by popping the edge from the priorityQueue,
+// the finder starts from the adjacent vertex and repeats the same procedure until the queue gets empty
+
+// at the end of the procedure, dist[] will contain the shortest distances from the source to the other vertices
+// for example, dist[1] is the shortest path from the source to vertex 1
+
+// finally it can calculate the average minimum shortest distance by iterating the dist[] vector
+
+
+// the program
+
+#include <bits/stdc++.h>;  // include STL c++ to use pair, queue, list, etc.
+using namespace std;
+const int INF = 0x3f3f3f3f; // infinite value INF for initialising distances from a certain source to the others
+typedef pair<int, double> edge; // edge as an pair <no. of vertex, distance>
+
+// random double generator to compare with the given edge_density
+double prob_density() {
+    return (double)rand() / (double)RAND_MAX;
+}
+
+// random distance generator between 1.0 and 10.0 as given in the HW2
+double rand_distance() {
+    return (10.0 - 1.0) * ((double)rand() / (double)RAND_MAX) + 1.0;
+}
+
+class Graph // Graph class
+{
+    int v; // number of vertices
+    double edge_density; // edge density
+    list<pair<int, double>>* vertex; // the list of pair <adjacent vertex, distance> of a certain vertex
+
+public:
+    // Graph constructor with given number of vertices and edge density
+    Graph(int no_of_vertices, double edge_density)
+    {
+        v = no_of_vertices;
+        this->edge_density = edge_density;
+        cout << "-------------------------------------------" << endl;
+        cout << "No. of vertices = " << v << endl;
+        cout << "Edge density = " << edge_density << endl;
+
+        vertex = new list<edge>[v]; // allocate space for vertices  
+
+        // random generator by the given distance range and edge density
+        random_graph_generator(v, edge_density);
+    }
+
+    void addEdge(int x, int y, double w); // add an edge in the graph from x to y along with weight w
+
+    // random graph generator using addEdge, no. of vertices, edge density, and distance range
+    void random_graph_generator(int no_of_vertices, double edge_density);
+    void shortestPath(int src); // shortestpath finder
+};
+
+void Graph::addEdge(int x, int y, double w) // add an edge between vertex x and vertex y along with weight w
+{
+    vertex[x].push_back(make_pair(y, w)); // x to y
+    vertex[y].push_back(make_pair(x, w)); // y to x, the same
+}
+
+// random graph generator with no. of vertices and edge density
+void Graph::random_graph_generator(int no_of_vertices, double edge_density)
+{
+    for (int i = 0; i < no_of_vertices; ++i) {
+        for (int j = i; j < no_of_vertices; ++j)
+        {
+            double density = prob_density(); // generate a random double
+            if (i != j) {
+                if (0 <= density && density <= edge_density) { // by the given edge_density
+                    double distance = rand_distance(); // generate a random distance
+                    addEdge(i, j, distance); // make an edge between i and j with the random distance
+                    // cout << "from " << i << " to " << j << ", dist : " << distance << endl;
+                }
+            }
+        }
+    }
+};
+
+// function to find the shortest path from the src vertex to the other vertices using dijkstra algorithm
+void Graph::shortestPath(int src) // in HW2 the src will be 0
+{
+    cout << "Start from " << src << endl << endl;
+    priority_queue<edge, vector<edge>, greater<edge>> pq; // a priority queue to store vertices being preprocessed
+    vector<double> dist(v, INF); // initialise all the distances from the source to the others to infinite  
+    pq.push(make_pair(src, 0)); // push the stack (from src to src with 0 distance) into the queue
+    dist[src] = 0; // distance from a source to itself is always 0  
+    while (!pq.empty()) {
+        // while the priorityQueue is not empty, 
+        // find the shortestPath by updating the distance with the newest minimum
+
+        int u = pq.top().first;
+        pq.pop();
+
+        // iterator i to get all the adjacent vertices and the distances from the current vertex u 
+        list<pair<int, double>>::iterator i;
+        for (i = vertex[u].begin(); i != vertex[u].end(); ++i) {
+            int v = (*i).first; // adjacent vertex v
+            double weight = (*i).second; // the distance from u to v
+
+            if (dist[v] > dist[u] + weight) { // If there is a more efficient path from src to v through u, 
+                // then update the distance
+                dist[v] = dist[u] + weight;
+                pq.push(make_pair(v, dist[v])); // and push it into the priorityQueue
+            }
+        }
+    }
+
+    // print result (the average shortest path)
+    double sum = 0.0;
+    int count = 0;
+    cout << "Destination" << "\t" << "Shortest Distance" << endl;
+    for (int i = 0; i < v; ++i) {
+        if (dist[i] != INF) { // exclude cases where there is no path to a certain vertex from the source
+            count++;
+            sum += dist[i];
+            cout << i << "\t\t" << dist[i] << endl; // The shortest distance from source 
+        }
+    }
+
+    double avg = sum / v;
+    cout << "The average shortest distance = " << avg << endl;
+    cout << "-------------------------------------------" << endl << endl << endl;
+}
+
+int main()
+{
+    srand(time(0));
+    Graph g1(50, 0.2); // construct a graph with 50 vertices and 0.2 edge density
+    g1.shortestPath(0); // find and calculate the average shortest path from the src 0
+
+    Graph g2(50, 0.4); // construct a graph with 50 vertices and 0.4 edge density
+    g2.shortestPath(0); // find and calculate the average shortest path from the src 0
+
+    return 0;
+}

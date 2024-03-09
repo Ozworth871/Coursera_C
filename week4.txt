@@ -1,0 +1,107 @@
+/* Input file name is set as numbers.txt
+ * Please modify it according to your input file */
+
+
+#include <stdio.h>
+#define MAX_INPUT 100 // modifiable for purpose
+
+// read data from a file while reading the first int as the size of the array
+void read_data(FILE *ptr, int d[], int *size)
+{
+	rewind(ptr); // set the file pointer to the beginning of the file
+	*size = 0;
+	fscanf(ptr, "%d", &(*size)); // read the first int as the size of the array
+	
+	int i = 0;
+	for (i = 0; i < *size; i++) {
+		fscanf(ptr, "%d", &d[i]); // put the remaining ints into the array
+	}
+}
+
+// print file data on the screen
+void print_file(FILE *fptr){
+	printf("data from the file\n");
+	int c;
+	rewind(fptr); 
+	while((c = getc(fptr)) != EOF)
+		putc(c, stdout);
+}
+
+// print file data to another file
+void print_to_file(FILE *ifp, FILE *ofp)
+{
+	int c;
+	rewind(ifp);
+	while((c = getc(ifp)) != EOF){
+		putc(c, ofp);
+	}
+	fprintf(ofp, "\n");
+}
+
+// calculate average of an array
+double average(int d[], int size)
+{
+	int k;
+	double sum = 0.0;
+
+	for (k = 0; k < size; k++) 
+		sum += d[k];
+	return(sum/size);
+}
+
+// gets max of an array
+int max(int d[], int size) 
+{
+	int j;
+	int max = 0;
+	
+	for (j = 0; j < size; j++) 
+	{
+		if (j == 0) max = d[j];
+		else if (d[j] > max) max = d[j];
+	}
+	return max;
+}
+
+int main() {
+	FILE *ifp, *ofp;
+	int size;
+	int d[MAX_INPUT];
+	int mx;
+	double avg;
+
+	ifp = fopen("numbers.txt", "r"); // modify according to your input file name
+	ofp = fopen("answer-hw3.txt", "w+"); // output file name is answer-hw3.txt
+	printf("\n");
+	print_file(ifp); // print the original data from the input file
+	printf("\n\n");
+
+	// print the size and the remaining ints
+	read_data(ifp, d, &size); 
+	printf("size = %d", size); 
+	printf("\n\n");
+	
+	int n = 0;
+	printf("ints for calculation:\n"); 
+	for (n = 0; n < size; n++){
+		printf("%d ", d[n]);
+	}
+
+	// calculate and print the average and max
+	avg = average(d, size);
+	mx = max(d, size);
+	printf("\n\n");
+	printf("Average = %f, Max = %d", avg, mx); 
+	printf("\n\n");
+
+	// prints the original data and the calculation results to the output file
+	fprintf(ofp, "Data from the original file:\n");
+	print_to_file(ifp, ofp);
+	fprintf(ofp, "size = %d\n", size);
+	fprintf(ofp, "Average = %f, Max = %d", avg, mx); 
+
+	// close files
+	fclose(ifp);
+	fclose(ofp);
+	return 0;
+}

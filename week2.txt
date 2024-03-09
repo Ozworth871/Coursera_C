@@ -1,0 +1,64 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+/* A code to print the information of 10 employees 
+ * including department, annual salary, and SSN */
+
+// department as enum
+enum department {HR, SALES, RESEARCH, SOFTWARE, EXECUTIVE};
+
+// define employee type variable
+typedef struct {
+	enum department dep;
+	int salary;
+	int ssn;
+} employee;
+
+// a function to print the enum department value as string
+const char *getDepName(enum department dep) {
+	switch (dep)
+	{
+		case HR: return "HR";
+		case SALES: return "SALES";
+		case RESEARCH: return "RESEARCH";
+		case SOFTWARE: return "SOFTWARE";
+		case EXECUTIVE: return "EXECUTIVE";
+	}
+}
+
+// a function to generate random salary according to each department
+int sal_generator(enum department dep) {
+	switch(dep) {
+		case HR: return (30000 + rand() % 10000);
+		case SALES: return (40000 + rand() % 10000);
+		case RESEARCH: return (20000 + rand() % 10000);
+		case SOFTWARE: return (50000 + rand() % 20000);
+		case EXECUTIVE: return (100000 + rand() % 30000);
+	}
+}
+
+int main() {
+	employee emp[10]; // 10 employees as array
+	
+	srand((unsigned)time(NULL)); // srand function for a seed to generate random salary and SSN
+	
+	for (int i = 0; i < 10; i++) {
+	
+	// allocate each employee to a certain department
+	if (i<4) emp[i].dep = HR; 
+	else if (i<6) emp[i].dep = SALES;
+	else if (i<8) emp[i].dep = RESEARCH;
+	else if (i<9) emp[i].dep = SOFTWARE;
+	else emp[i].dep = EXECUTIVE;
+	
+	emp[i].ssn = 1000000 + i; // give each employee a different SSN
+	emp[i].salary = sal_generator(emp[i].dep); // give each employee a random salary using the generator
+
+	// print the information of each employee per a line
+	printf("employee %d: department=%s, salary=%d, ssn=%d\n", i, 
+		getDepName(emp[i].dep), emp[i].salary, emp[i].ssn);
+	}
+	
+	return (0);
+}

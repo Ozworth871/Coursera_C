@@ -1,0 +1,20 @@
+/* A program to print a table of values 
+for sine and cosine between (0,1) */
+
+#include<stdio.h>
+#include<math.h> /* has sin() and cos() */
+
+int main(void)
+{ 
+double interval;
+int i;
+for(i = 0; i < 10; i++) /* set an interval between 0 and 1 */
+{
+ interval = i/10.0; /* the input values will be 0, 0.1, 0.2, ... 0.9 */
+ printf("sin( %lf ) = %lf \t", interval, sin(interval)); /* sine values */
+ printf("cos( %lf ) = %lf \t", interval, cos(interval)); /* cosine values */
+}
+
+printf("\n+++++++\n");
+return 0;
+}
